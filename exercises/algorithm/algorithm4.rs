@@ -3,7 +3,7 @@
 	This problem requires you to implement a basic interface for a binary tree
 */
 
-//I AM NOT DONE
+
 use std::cmp::Ordering;
 use std::fmt::Debug;
 
@@ -28,49 +28,83 @@ where
 
 impl<T> TreeNode<T>
 where
-    T: Ord,
+T: Ord,
 {
-    fn new(value: T) -> Self {
-        TreeNode {
-            value,
-            left: None,
-            right: None,
-        }
-    }
+fn new(value: T) -> Self {
+TreeNode {
+value,
+left: None,
+right: None,
+}
+}
+
+fn insert(&mut self, value: T) {
+match value.cmp(&self.value) {
+Ordering::Less => {
+if let Some(left) = self.left.as_mut() {
+left.insert(value);
+} else {
+self.left = Some(Box::new(TreeNode::new(value)));
+}
+}
+Ordering::Greater => {
+if let Some(right) = self.right.as_mut() {
+right.insert(value);
+} else {
+self.right = Some(Box::new(TreeNode::new(value)));
+}
+}
+Ordering::Equal => {
+// Do nothing if value is already in the tree
+}
+}
+}
+
+fn search(&self, value: T) -> bool {
+match value.cmp(&self.value) {
+Ordering::Less => {
+if let Some(left) = self.left.as_ref() {
+left.search(value)
+} else {
+false
+}
+}
+Ordering::Greater => {
+if let Some(right) = self.right.as_ref() {
+right.search(value)
+} else {
+false
+}
+}
+Ordering::Equal => true,
+}
+}
 }
 
 impl<T> BinarySearchTree<T>
 where
-    T: Ord,
+T: Ord,
 {
-
-    fn new() -> Self {
-        BinarySearchTree { root: None }
-    }
-
-    // Insert a value into the BST
-    fn insert(&mut self, value: T) {
-        //TODO
-    }
-
-    // Search for a value in the BST
-    fn search(&self, value: T) -> bool {
-        //TODO
-        true
-    }
+fn new() -> Self {
+BinarySearchTree { root: None }
 }
 
-impl<T> TreeNode<T>
-where
-    T: Ord,
-{
-    // Insert a node into the tree
-    fn insert(&mut self, value: T) {
-        //TODO
-    }
+fn insert(&mut self, value: T) {
+if let Some(root) = self.root.as_mut() {
+root.insert(value);
+} else {
+self.root = Some(Box::new(TreeNode::new(value)));
+}
 }
 
-
+fn search(&self, value: T) -> bool {
+if let Some(root) = self.root.as_ref() {
+root.search(value)
+} else {
+false
+}
+}
+}
 #[cfg(test)]
 mod tests {
     use super::*;

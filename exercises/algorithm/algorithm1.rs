@@ -2,7 +2,7 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
+
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
@@ -69,15 +69,52 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
-	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
-        }
-	}
+    pub fn merge<F>(mut list_a: LinkedList<T>, mut list_b: LinkedList<T>, mut cmp: F) -> Self
+    where
+    F: FnMut(&T, &T) -> bool,
+    {
+    let mut merged_list = LinkedList::new();
+    
+    let mut i = 0;
+    let mut j = 0;
+    
+    while i < list_a.length as i32 && j < list_b.length as i32 {
+    let val_a = list_a.get(i);
+    let val_b = list_b.get(j);
+    
+    match (val_a, val_b) {
+    (Some(a), Some(b)) => {
+    if cmp(a, b) {
+    merged_list.add(unsafe { std::ptr::read(a) });
+    i += 1;
+    } else {
+    merged_list.add(unsafe { std::ptr::read(b) });
+    j += 1;
+    }
+    }
+    _ => break,
+    }
+    }
+    
+    // 添加剩余的 list_a 元素
+    while i < list_a.length as i32 {
+    if let Some(val) = list_a.get(i) {
+    merged_list.add(unsafe { std::ptr::read(val) });
+    }
+    i += 1;
+    }
+    
+    // 添加剩余的 list_b 元素
+    while j < list_b.length as i32 {
+    if let Some(val) = list_b.get(j) {
+    merged_list.add(unsafe { std::ptr::read(val) });
+    }
+    j += 1;
+    }
+    
+    merged_list
+    }
+	
 }
 
 impl<T> Display for LinkedList<T>
@@ -143,7 +180,7 @@ mod tests {
 			list_b.add(vec_b[i]);
 		}
 		println!("list a {} list b {}", list_a,list_b);
-		let mut list_c = LinkedList::<i32>::merge(list_a,list_b);
+		let mut list_c = LinkedList::<i32>::merge(list_a, list_b, |a, b| a < b);
 		println!("merged List is {}", list_c);
 		for i in 0..target_vec.len(){
 			assert_eq!(target_vec[i],*list_c.get(i as i32).unwrap());
@@ -164,7 +201,7 @@ mod tests {
 			list_b.add(vec_b[i]);
 		}
 		println!("list a {} list b {}", list_a,list_b);
-		let mut list_c = LinkedList::<i32>::merge(list_a,list_b);
+		let mut list_c = LinkedList::<i32>::merge(list_a, list_b, |a, b| a < b);
 		println!("merged List is {}", list_c);
 		for i in 0..target_vec.len(){
 			assert_eq!(target_vec[i],*list_c.get(i as i32).unwrap());

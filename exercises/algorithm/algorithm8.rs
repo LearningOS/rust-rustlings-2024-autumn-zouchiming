@@ -2,7 +2,7 @@
 	queue
 	This question requires you to use queues to implement the functionality of the stac
 */
-// I AM NOT DONE
+
 
 #[derive(Debug)]
 pub struct Queue<T> {
@@ -52,32 +52,51 @@ impl<T> Default for Queue<T> {
     }
 }
 
-pub struct myStack<T>
-{
-	//TODO
-	q1:Queue<T>,
-	q2:Queue<T>
-}
-impl<T> myStack<T> {
+pub struct myStack<T> {
+    q1: Queue<T>,
+    q2: Queue<T>,
+    }
+    
+    impl<T> myStack<T> {
     pub fn new() -> Self {
-        Self {
-			//TODO
-			q1:Queue::<T>::new(),
-			q2:Queue::<T>::new()
-        }
+    Self {
+    q1: Queue::new(),
+    q2: Queue::new(),
     }
+    }
+    
     pub fn push(&mut self, elem: T) {
-        //TODO
+    // 将元素加入队列 q2
+    self.q2.enqueue(elem);
+    
+    // 将 q1 中的所有元素移到 q2 中
+    while let Ok(value) = self.q1.dequeue() {
+    self.q2.enqueue(value);
     }
+    
+    // 将 q2 赋值给 q1
+    std::mem::swap(&mut self.q1, &mut self.q2);
+    }
+    
     pub fn pop(&mut self) -> Result<T, &str> {
-        //TODO
-		Err("Stack is empty")
-    }
+        // 确保 q1 不为空
+        if self.q1.is_empty() {
+        return Err("Stack is empty");
+        }
+        
+        // 从 q1 中弹出元素
+        let mut value = self.q1.dequeue().unwrap(); // 获取并移除元素
+        // 如果需要进行更多的操作，例如维护 q2，这里可以加入逻辑
+        
+        // 返回弹出的值
+        Ok(value)
+        }
+    
     pub fn is_empty(&self) -> bool {
-		//TODO
-        true
+    self.q1.is_empty()
     }
-}
+    }
+
 
 #[cfg(test)]
 mod tests {
